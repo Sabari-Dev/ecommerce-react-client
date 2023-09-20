@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
 import Rating from "./Rating";
 
-const Products = ({ product, userId }) => {
+const Products = ({ product, userId, index }) => {
   const navigate = useNavigate();
 
   const getId = (id) => {
@@ -13,8 +13,8 @@ const Products = ({ product, userId }) => {
   return (
     <Card
       style={{ width: "18rem" }}
-      key={product._id}
-      className="p-2 text-center"
+      key={index}
+      className="p-2 text-center mx-auto"
     >
       <Card.Img
         variant="top"

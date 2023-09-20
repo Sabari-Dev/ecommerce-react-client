@@ -3,7 +3,8 @@ import axios from "axios";
 import FloatingLabel from "react-bootstrap/FloatingLabel";
 import Form from "react-bootstrap/Form";
 import Spinner from "react-bootstrap/Spinner";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import FileBase64 from "react-filebase64";
 
 const SignUp = () => {
   const [user, setUser] = useState({
@@ -12,6 +13,7 @@ const SignUp = () => {
     password: "",
     gender: "",
     dateOfBirth: "",
+    profileImage: "",
   });
   const [errors, setErrors] = useState({});
 
@@ -19,6 +21,11 @@ const SignUp = () => {
     const { name, value } = e.target;
     setUser((prev) => {
       return { ...prev, [name]: value };
+    });
+  };
+  const handleFileUpload = (file) => {
+    setUser((prev) => {
+      return { ...prev, profileImage: file.base64 };
     });
   };
 
@@ -51,6 +58,9 @@ Allows special characters`;
     if (!user.gender) {
       validationErrors.gender = `Select gender`;
     }
+    if (!user.profileImage) {
+      validationErrors.profileImage = "choose image for profile";
+    }
 
     return validationErrors;
   };
@@ -65,12 +75,17 @@ Allows special characters`;
         password: user.password,
         gender: user.gender,
         dateOfBirth: user.dateOfBirth,
+        profileImage: user.profileImage,
       };
       await axios
-        .post("http://localhost:5000/api/s1/users/create", newUser)
+        .post(
+          "https://hilarious-skirt-moth.cyclic.cloud/api/s1/users/create",
+          newUser
+        )
         .then((res) => {
           toast.success(res.data.message);
           // console.log(res.data);
+          window.location.reload();
         })
         .catch((error) => {
           console.log(error);
@@ -84,8 +99,8 @@ Allows special characters`;
         password: "",
         gender: "",
         dateOfBirth: "",
+        profileImage: "",
       });
-      window.location.reload();
     } else {
       setErrors(validationErrors);
       setTimeout(() => {
@@ -95,7 +110,6 @@ Allows special characters`;
   };
   return (
     <form action="#" onSubmit={handleSubmit}>
-      <Toaster />
       <h3>Create Account</h3>
       <FloatingLabel
         controlId="floatingInput"
@@ -166,6 +180,19 @@ Allows special characters`;
         />
       </FloatingLabel>
       {errors.dateOfBirth && <p className="message">{errors.dateOfBirth}</p>}
+      <Form.Group className="mb-1 w-75 d-flex">
+        <Form.Label>Upload profile:</Form.Label>
+        <FileBase64 multiple={false} onDone={handleFileUpload} />
+        {user.profileImage && (
+          <img
+            src={user.profileImage}
+            alt="Profile Preview"
+            className="mb-3"
+            style={{ height: "60px", width: "60px" }}
+          />
+        )}
+      </Form.Group>
+      {errors.profileImage && <p className="message">{errors.profileImage}</p>}
       <button>
         {user.loading ? <Spinner animation="border" /> : "Sign Up"}
       </button>

@@ -10,9 +10,20 @@ body {
   flex-direction: initial;
   height: 100vh;
 }
+
 .filter {
   display: none;
 }
 .active {
   display: contents;
+}
+footer .social-icons {
+  margin-left: 20px;
+}
+footer .social-icons a i {
+  font-size: 25px;
+  margin-left: 10px;
+}
+footer ul li a:hover {
+  color: #f6f5f7;
 }

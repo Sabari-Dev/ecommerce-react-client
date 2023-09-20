@@ -9,13 +9,13 @@ const Rating = ({ rate, id }) => {
       {[...Array(5)].map((star, index) => {
         if (index + 1 <= rating.toFixed()) {
           return (
-            <i key={id} className="text-warning pe-1">
+            <i key={index} className="text-warning pe-1">
               <BsStarFill />
             </i>
           );
         } else {
           return (
-            <i key={id} className="text-warning p-1">
+            <i key={index} className="text-warning p-1">
               <BsStar />
             </i>
           );

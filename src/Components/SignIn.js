@@ -15,7 +15,7 @@ const SignIn = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/s1/users")
+      .get("https://hilarious-skirt-moth.cyclic.cloud/api/s1/users")
       .then((res) => {
         setUsers(res.data.users);
       })
@@ -77,7 +77,7 @@ const SignIn = () => {
       <h3>Sign in</h3>
 
       <FloatingLabel
-        controlId="floatingInput"
+        controlId="floatingInputSignIn"
         label="Email address"
         className="mb-3 w-75"
       >
@@ -91,7 +91,7 @@ const SignIn = () => {
       </FloatingLabel>
       {errors.email && <p className="message">{errors.email}</p>}
       <FloatingLabel
-        controlId="floatingPassword"
+        controlId="floatingPasswordSignIn"
         label="Password"
         className="mb-3 w-75"
       >

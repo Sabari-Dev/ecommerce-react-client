@@ -15,6 +15,7 @@ import { FcFilledFilter } from "react-icons/fc";
 import { GrLogout } from "react-icons/gr";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Tooltip from "react-bootstrap/Tooltip";
+import FileBase64 from "react-file-base64";
 
 const NavPage = () => {
   const [show, setShow] = useState(false);
@@ -29,6 +30,7 @@ const NavPage = () => {
     password: "",
     gender: "",
     dateOfBirth: "",
+    profileImage: "",
   });
   const navigate = useNavigate();
   const handleClose = () => {
@@ -37,19 +39,22 @@ const NavPage = () => {
   };
   const handleShow = () => {
     setShow(true);
-    viewProfile();
   };
   const { id } = useParams();
   // console.log(id);
-  const viewProfile = async () => {
-    await axios
-      .get(`http://localhost:5000/api/s1/users/${id}`)
-      .then((users) => {
-        setUser(users.data.user);
-        setLoading(false);
-      })
-      .catch((err) => console.log(err));
-  };
+  useEffect(() => {
+    const viewProfile = async () => {
+      await axios
+        .get(`https://hilarious-skirt-moth.cyclic.cloud/api/s1/users/${id}`)
+        .then((users) => {
+          setUser(users.data.user);
+          setLoading(false);
+        })
+        .catch((err) => console.log(err));
+    };
+    viewProfile();
+  }, [id]);
+
   const renderTooltip = (props) => (
     <Tooltip id="button-tooltip" {...props}>
       Filter
@@ -57,7 +62,7 @@ const NavPage = () => {
   );
   useEffect(() => {
     axios
-      .get(`http://localhost:5000/api/s1/cart/${id}`)
+      .get(`https://hilarious-skirt-moth.cyclic.cloud/api/s1/cart/${id}`)
       .then((res) => {
         const cartData = res.data;
         const itemsLength = cartData.items.length;
@@ -77,15 +82,23 @@ const NavPage = () => {
       [name]: value,
     }));
   };
+  const handleFileUpload = (file) => {
+    setEditedUser((prev) => {
+      return { ...prev, profileImage: file.base64 };
+    });
+  };
 
   const onSave = async () => {
     try {
       await axios
-        .put(`http://localhost:5000/api/s1/users/${id}`, editedUser)
-        .then((users) => {
+        .put(
+          `https://hilarious-skirt-moth.cyclic.cloud/api/s1/users/${id}`,
+          editedUser
+        )
+        .then((response) => {
           setUser(editedUser);
           setEditing(true);
-          toast.success(users.data.message);
+          toast.success(response.data.message);
           handleClose();
         })
         .catch((err) => console.log(err));
@@ -97,7 +110,9 @@ const NavPage = () => {
     try {
       if (window.confirm("Are you sure to delete the Account ? ")) {
         await axios
-          .delete(`http://localhost:5000/api/s1/users/${id}`)
+          .delete(
+            `https://hilarious-skirt-moth.cyclic.cloud/api/s1/users/${id}`
+          )
           .then((users) => {
             toast(users.data.message);
             navigate("/");
@@ -105,6 +120,7 @@ const NavPage = () => {
       }
     } catch (error) {}
   };
+  // console.log(user);
   const getCart = () => {
     navigate(`/cart/${id}`);
   };
@@ -112,10 +128,10 @@ const NavPage = () => {
     document.querySelector(".filter").classList.toggle("active");
   };
   return (
-    <Navbar expand="lg" className="bg-body-tertiary" style={{ height: "15vh" }}>
+    <Navbar expand="lg" className="bg-light" style={{ minHeight: "15vh" }}>
       <Container fluid>
         <Navbar.Brand href="#">
-          <img src={logo} alt="" style={{ height: "150px", width: "170px" }} />
+          <img src={logo} alt="" style={{ height: "40px", width: "140px" }} />
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
@@ -142,6 +158,18 @@ const NavPage = () => {
               onClick={handleShow}
               className="my-3 mx-3 h-25"
             >
+              {user && (
+                <img
+                  className="me-2"
+                  src={user.profileImage}
+                  alt="img"
+                  style={{
+                    height: "25px",
+                    width: "25px",
+                    borderRadius: "50%",
+                  }}
+                />
+              )}
               profile
             </Button>
             <Modal
@@ -160,12 +188,13 @@ const NavPage = () => {
                   <Form className="text-start p-2 ">
                     <Form.Group
                       className="mb-3 w-100"
-                      controlId="formGroupName"
+                      controlId="formGroupNameProfile"
                     >
                       <Form.Label>Name :</Form.Label>
                       <Form.Control
                         type="text"
                         placeholder="Enter name"
+                        name="name"
                         value={editing ? user.name : editedUser.name}
                         disabled={editing}
                         onChange={handleChange}
@@ -173,12 +202,13 @@ const NavPage = () => {
                     </Form.Group>
                     <Form.Group
                       className="mb-3 w-100"
-                      controlId="formGroupEmail"
+                      controlId="formGroupEmailProfile"
                     >
                       <Form.Label>Email :</Form.Label>
                       <Form.Control
                         type="email"
                         placeholder="Enter email"
+                        name="email"
                         value={editing ? user.email : editedUser.email}
                         disabled={editing}
                         onChange={handleChange}
@@ -186,12 +216,13 @@ const NavPage = () => {
                     </Form.Group>
                     <Form.Group
                       className="mb-3 w-100"
-                      controlId="formGroupPassword"
+                      controlId="formGroupPasswordProfile"
                     >
                       <Form.Label>Password :</Form.Label>
                       <Form.Control
                         type="password"
                         placeholder="Password"
+                        name="password"
                         value={editing ? user.password : editedUser.password}
                         disabled={editing}
                         onChange={handleChange}
@@ -200,7 +231,7 @@ const NavPage = () => {
 
                     <Form.Group
                       className="mb-3 w-100"
-                      controlId="formGroupGender"
+                      controlId="formGroupGenderProfile"
                     >
                       <Form.Label>Gender :</Form.Label>
                       <Form.Select
@@ -217,7 +248,10 @@ const NavPage = () => {
                         <option value="other">Other</option>
                       </Form.Select>
                     </Form.Group>
-                    <Form.Group className="mb-3 w-100" controlId="formGroupDob">
+                    <Form.Group
+                      className="mb-3 w-100"
+                      controlId="formGroupDobProfile"
+                    >
                       <Form.Label>Date Of Birth :</Form.Label>
                       <Form.Control
                         type="date"
@@ -229,6 +263,18 @@ const NavPage = () => {
                         disabled={editing}
                         onChange={handleChange}
                       />
+                    </Form.Group>
+                    <Form.Group className="mb-1 w-75 d-flex">
+                      <Form.Label>Upload profile:</Form.Label>
+                      <FileBase64 multiple={false} onDone={handleFileUpload} />
+                      {editedUser.profileImage && (
+                        <img
+                          src={editedUser.profileImage}
+                          alt="Profile Preview"
+                          className="mb-3"
+                          style={{ height: "60px", width: "60px" }}
+                        />
+                      )}
                     </Form.Group>
                   </Form>
                 )}

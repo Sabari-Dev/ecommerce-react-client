@@ -60,6 +60,12 @@ const LandingPage = () => {
               <button className="ghost" onClick={handleSignUpClick}>
                 Sign Up
               </button>
+              <div className="test">
+                <hr />
+                <h2>Here is the test Account</h2>
+                <div className="email">Email : test@gmail.com</div>
+                <div className="pass">Password: Test@1234</div>
+              </div>
             </div>
           </div>
         </div>
